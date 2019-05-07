@@ -1,0 +1,7 @@
+# COMPOSER
+vendor/
+composer.lock
+
+# IDE
+.vscode/
+.idea/

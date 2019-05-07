@@ -1,0 +1,19 @@
+{
+    "name": "fzed51/log",
+    "description": "Systeme de log utilisant error_log conforme \u0000 la PSR-3",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Fabien Sanchez",
+            "email": "fzed51+git@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "psr/log": "^1.1"
+    },
+    "require-dev": {
+        "fzed51/run-test": "^1.7"
+    }
+}

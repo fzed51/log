@@ -33,6 +33,16 @@ class Logger extends AbstractLogger
         LogLevel::INFO => 'info',
         LogLevel::DEBUG => 'debug',
     ];
+    private static $level = [
+        LogLevel::EMERGENCY => 0,
+        LogLevel::ALERT => 1,
+        LogLevel::CRITICAL => 2,
+        LogLevel::ERROR => 3,
+        LogLevel::WARNING => 4,
+        LogLevel::NOTICE => 5,
+        LogLevel::INFO => 6,
+        LogLevel::DEBUG => 7,
+    ];
 
     protected $levelMax;
 
@@ -53,7 +63,7 @@ class Logger extends AbstractLogger
         }
 
         if (is_string($levelMax)) {
-            $levelMax = array_search($levelMax, self::$dico, true);
+            $levelMax = $this->levelToInt($levelMax);
         }
         if (is_int($levelMax)) {
             $this->levelMax = $levelMax;
@@ -91,6 +101,12 @@ class Logger extends AbstractLogger
      */
     public function log($level, $message, array $context = [])
     {
+        $this->testLevel($level);
+
+        if ($this->levelToInt($level) > $this->levelMax) {
+            return;
+        }
+
         $log = sprintf(
             '[%s] [%s] [%s] > %s',
             $this->getSessionId(),
@@ -130,10 +146,27 @@ class Logger extends AbstractLogger
      */
     private function levelToStr($level): string
     {
+        return self::$dico[$level];
+    }
+
+    /**
+     * @param mixed $level
+     * @return void;
+     */
+    private function testLevel($level)
+    {
         if (!isset(self::$dico[$level])) {
             throw new InvalidArgumentException("'$level' n'est pas un niveau de log valide.");
         }
-        return self::$dico[$level];
+    }
+
+    /**
+     * @param mixed $level
+     * @return int
+     */
+    private function levelToInt($level): int
+    {
+        return self::$level[$level] ?: count(self::$level);
     }
 
     protected static function interpolate($message, array $context = [])

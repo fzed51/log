@@ -11,9 +11,18 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "psr/log": "^1.1"
+        "psr/log": "^1.1",
+      "ext-openssl": "*"
     },
     "require-dev": {
         "fzed51/run-test": "^1.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Log\\": "./src"
+        }
+    },
+    "scripts": {
+        "test": "run-test ./test"
     }
 }

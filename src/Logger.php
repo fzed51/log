@@ -109,7 +109,7 @@ class Logger extends AbstractLogger
 
         $log = sprintf(
             '[%s] [%s] [%s] > %s',
-            $this->getSessionId(),
+            $this->getRemoteIp(),
             $this->getInstanceId(),
             $this->levelToStr($level),
             empty($context)
@@ -120,15 +120,12 @@ class Logger extends AbstractLogger
     }
 
     /**
-     * retourne l'identifiant unique de la session
+     * retourne l'adresse IP de l'emetteur de la requete
      * @return string
      */
-    protected function getSessionId(): string
+    protected function getRemoteIp(): string
     {
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            return session_id();
-        }
-        return '';
+        return $_SERVER['REMOTE_ADDR'] ?? '';
     }
 
     /**
@@ -181,10 +178,7 @@ class Logger extends AbstractLogger
                 $replace['{' . $key . '}'] = $val->getMessage();
             }
         }
-
         // interpolate replacement values into the message and return
-        $log = strtr($message, $replace);
-
-        return $log;
+        return strtr($message, $replace);
     }
 }

@@ -106,15 +106,15 @@ class Logger extends AbstractLogger
         if ($this->levelToInt($level) > $this->levelMax) {
             return;
         }
-
+        $messageConstruit = empty($context)
+            ? $message
+            : static::interpolate($message, $context);
         $log = sprintf(
             '[%s] [%s] [%s] > %s',
             $this->getRemoteIp(),
             $this->getInstanceId(),
             $this->levelToStr($level),
-            empty($context)
-                ? $message
-                : static::interpolate($message, $context)
+            str_replace(PHP_EOL, ' § ', $messageConstruit)
         );
         error_log($log);
     }

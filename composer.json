@@ -15,7 +15,7 @@
       "ext-openssl": "*"
     },
     "require-dev": {
-        "fzed51/run-test": "^1.7"
+        "fzed51/run-test": "^1.8"
     },
     "autoload": {
         "psr-4": {

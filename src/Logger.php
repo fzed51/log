@@ -114,7 +114,7 @@ class Logger extends AbstractLogger
             $this->getRemoteIp(),
             $this->getInstanceId(),
             $this->levelToStr($level),
-            str_replace(PHP_EOL, ' § ', $messageConstruit)
+            str_replace(["\r\n", PHP_EOL, "\n", "\r"], ' § ', $messageConstruit)
         );
         error_log($log);
     }

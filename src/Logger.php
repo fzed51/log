@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 /**
  * User: Fabien Sanchez
@@ -111,7 +112,7 @@ class Logger extends AbstractLogger
             : static::interpolate($message, $context);
         $log = sprintf(
             '[%s] [%s] [%s] > %s',
-            $this->getRemoteIp(),
+            $this->getRemote(),
             $this->getInstanceId(),
             $this->levelToStr($level),
             str_replace(["\r\n", PHP_EOL, "\n", "\r"], ' § ', $messageConstruit)
@@ -121,11 +122,13 @@ class Logger extends AbstractLogger
 
     /**
      * retourne l'adresse IP de l'emetteur de la requete
+     * si il n'y a pas d'adresse disponnible retourne le
+     * script php à l'origine de l'exécution;
      * @return string
      */
-    protected function getRemoteIp(): string
+    protected function getRemote(): string
     {
-        return $_SERVER['REMOTE_ADDR'] ?? '';
+        return $_SERVER['REMOTE_ADDR'] ?? $_SERVER['PHP_SELF'] ?? '';
     }
 
     /**

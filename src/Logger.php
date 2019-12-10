@@ -48,6 +48,12 @@ class Logger extends AbstractLogger
     protected $levelMax;
 
     /**
+     * nom du fichier de log
+     * @var string
+     */
+    protected $filename;
+
+    /**
      * Logger constructor.
      * @param int|string|null $levelMax
      * @throws \Exception
@@ -58,8 +64,8 @@ class Logger extends AbstractLogger
             self::$instanceId = self::generateUuid(12);
             $logFolder = '.' . DIRECTORY_SEPARATOR . 'log';
             self::controlOrCreateDirectory($logFolder);
-            $logFile = $logFolder . DIRECTORY_SEPARATOR . 'log_' . date('Ymd') . '.log';
-            ini_set('error_log', $logFile);
+            $this->filename = $logFolder . DIRECTORY_SEPARATOR . 'log_' . date('Ymd') . '.log';
+            ini_set('error_log', $this->filename);
             ini_set('log_errors', '1');
         }
 
@@ -117,7 +123,18 @@ class Logger extends AbstractLogger
             $this->levelToStr($level),
             str_replace(["\r\n", PHP_EOL, "\n", "\r"], ' § ', $messageConstruit)
         );
-        error_log($log);
+        $this->writeLog($log);
+    }
+
+    public function writeLog(string $message)
+    {
+        if (PHP_SAPI === 'fpm-fcgi') {
+            $handler = fopen($this->filename, 'a+');
+            fwrite($handler, trim($message) . PHP_EOL);
+            fclose($handler);
+        } else {
+            error_log($message);
+        }
     }
 
     /**
@@ -128,7 +145,9 @@ class Logger extends AbstractLogger
      */
     protected function getRemote(): string
     {
-        return $_SERVER['REMOTE_ADDR'] ?? $_SERVER['PHP_SELF'] ?? '';
+        return $_SERVER['HTTP_X_FORWARDED_FOR']
+            ?? ($_SERVER['REMOTE_ADDR']
+                ?? $_SERVER['PHP_SELF'] ?? '');
     }
 
     /**

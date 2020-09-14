@@ -8,3 +8,5 @@ composer.lock
 
 # PROJET
 test/log/
+log/
+.phpunit.result.cache

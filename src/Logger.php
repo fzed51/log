@@ -23,7 +23,7 @@ class Logger extends AbstractLogger
      * @var string
      */
     protected static $instanceId;
-
+    /** @var string[] */
     private static $dico = [
         LogLevel::EMERGENCY => 'emergency',
         LogLevel::ALERT => 'alert',
@@ -34,6 +34,7 @@ class Logger extends AbstractLogger
         LogLevel::INFO => 'info',
         LogLevel::DEBUG => 'debug',
     ];
+    /** @var int[] */
     private static $level = [
         LogLevel::EMERGENCY => 0,
         LogLevel::ALERT => 1,
@@ -62,12 +63,13 @@ class Logger extends AbstractLogger
     {
         if (self::$instanceId === null) {
             self::$instanceId = self::generateUuid(12);
-            $logFolder = '.' . DIRECTORY_SEPARATOR . 'log';
-            self::controlOrCreateDirectory($logFolder);
-            $this->filename = $logFolder . DIRECTORY_SEPARATOR . 'log_' . date('Ymd') . '.log';
-            ini_set('error_log', $this->filename);
-            ini_set('log_errors', '1');
         }
+        $logFolder = '.' . DIRECTORY_SEPARATOR . 'log';
+        self::controlOrCreateDirectory($logFolder);
+        $this->filename = realpath($logFolder) . DIRECTORY_SEPARATOR . 'log_' . date('Ymd') . '.log';
+        ini_set('error_log', $this->filename);
+        ini_set('log_errors', '1');
+
 
         if (is_string($levelMax)) {
             $levelMax = $this->levelToInt($levelMax);
@@ -106,7 +108,7 @@ class Logger extends AbstractLogger
      * @param array $context
      * @return void
      */
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = []): void
     {
         $this->testLevel($level);
 
@@ -126,7 +128,7 @@ class Logger extends AbstractLogger
         $this->writeLog($log);
     }
 
-    public function writeLog(string $message)
+    public function writeLog(string $message): void
     {
         $handler = fopen($this->filename, 'a+');
         $data = (new \DateTime())->format(DATE_ATOM);

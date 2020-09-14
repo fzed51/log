@@ -128,14 +128,10 @@ class Logger extends AbstractLogger
 
     public function writeLog(string $message)
     {
-        if (PHP_SAPI === 'fpm-fcgi') {
-            $handler = fopen($this->filename, 'a+');
-            $data = (new \DateTime())->format(DATE_ATOM);
-            fwrite($handler, "[$data] " . trim($message) . PHP_EOL);
-            fclose($handler);
-        } else {
-            error_log($message);
-        }
+        $handler = fopen($this->filename, 'a+');
+        $data = (new \DateTime())->format(DATE_ATOM);
+        fwrite($handler, "[$data] " . trim($message) . PHP_EOL);
+        fclose($handler);
     }
 
     /**

@@ -55,6 +55,11 @@ class Logger extends AbstractLogger
     protected $filename;
 
     /**
+     * @var
+     */
+    protected $accessRules;
+
+    /**
      * Logger constructor.
      * @param int|string|null $levelMax
      * @throws \Exception
@@ -79,6 +84,8 @@ class Logger extends AbstractLogger
         } else {
             $this->levelMax = count(self::$dico);
         }
+
+        $this->accessRules = 0644;
     }
 
     /**
@@ -134,6 +141,7 @@ class Logger extends AbstractLogger
         $data = (new \DateTime())->format(DATE_ATOM);
         fwrite($handler, "[$data] " . trim($message) . PHP_EOL);
         fclose($handler);
+        chmod($this->filename, $this->accessRules);
     }
 
     /**
@@ -201,5 +209,19 @@ class Logger extends AbstractLogger
         }
         // interpolate replacement values into the message and return
         return strtr($message, $replace);
+    }
+
+    /**
+     * @param int $accessRules
+     * @return $this
+     */
+    public function setAccessRules(int $accessRules): Logger
+    {
+        if($accessRules > 0777 || $accessRules < 00) {
+            throw new \OutOfRangeException("Les access rules sont comprisent entre 00 et 0777");
+        }
+        $accessRules |= 0200; // on ne peu pas ne pas avoir les droits en écriture sur le fichier de log
+        $this->accessRules = $accessRules;
+        return $this;
     }
 }

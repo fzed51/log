@@ -135,12 +135,31 @@ class Logger extends AbstractLogger
         $this->writeLog($log);
     }
 
-    public function writeLog(string $message): void
+    /**
+     * écrire le lig dans le fichier
+     * @param string $message
+     */
+    protected function writeLog(string $message): void
     {
         $handler = fopen($this->filename, 'a+');
         $data = (new \DateTime())->format(DATE_ATOM);
         fwrite($handler, "[$data] " . trim($message) . PHP_EOL);
         fclose($handler);
+        $this->setFileRulesAccess();
+    }
+
+    /**
+     * Donner les règles d'acces au fichier
+     */
+    private function setFileRulesAccess(): void
+    {
+        // Pour palier au problème d'exécution de cette commande,
+        //     elle est ignorée si l' OS est un WSL
+        $os = strtolower(PHP_OS);
+        $version = strtolower(php_uname('r'));
+        if ($os === 'linux' && strpos($version, 'wsl') !== false) {
+            return;
+        }
         chmod($this->filename, $this->accessRules);
     }
 
